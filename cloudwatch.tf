@@ -1,12 +1,17 @@
-# Lambda function logs
-resource "aws_cloudwatch_log_group" "main" {
-  name              = "/aws/lambda/${var.name}"
-  retention_in_days = 7
-}
-
 locals {
   scaleup_name = "scaleup"
   scaledown_name = "scaledown"
+}
+
+# Lambda function logs
+resource "aws_cloudwatch_log_group" "scaleup" {
+  name              = "/aws/lambda/${var.name}-${local.scaleup_name}"
+  retention_in_days = 7
+}
+
+resource "aws_cloudwatch_log_group" "scaledown" {
+  name              = "/aws/lambda/${var.name}-${local.scaledown_name}"
+  retention_in_days = 7
 }
 
 # Scale-up alarm

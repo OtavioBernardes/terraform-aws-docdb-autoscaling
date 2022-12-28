@@ -22,7 +22,7 @@ resource "aws_lambda_function" "scaleup" {
   }
 
   depends_on = [
-    aws_cloudwatch_log_group.main,
+    aws_cloudwatch_log_group.scaleup,
     data.archive_file.source_code
   ]
 }
@@ -60,7 +60,7 @@ resource "aws_lambda_function" "scaledown" {
   }
 
   depends_on = [
-    aws_cloudwatch_log_group.main,
+    aws_cloudwatch_log_group.scaledown,
     data.archive_file.source_code
   ]
 }
