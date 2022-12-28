@@ -77,7 +77,6 @@ resource "aws_cloudwatch_event_target" "scaledown" {
     arn = aws_lambda_function.scaledown.arn
 }
 
-
 resource "aws_lambda_permission" "scaledown" {
     statement_id = "AllowExecutionFromCloudWatch"
     action = "lambda:InvokeFunction"
