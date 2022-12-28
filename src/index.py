@@ -109,7 +109,6 @@ def scaledown(event, context):
     if average < scaledown_target:
       logging.warning("The " + statistic + " " + metric_name + " has been below " + str(scaledown_target) + " for " + str(period) + "seconds, scaling down...")
       docdb.remove_replica()
-      logging.critical("Would remove Replica...")
     else:
       logging.warning("The " + statistic + " " + metric_name + " has been above " + str(scaledown_target) + " for " + str(period) + "seconds, no action taken...")
       return None
