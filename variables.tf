@@ -47,19 +47,21 @@ variable "max_capacity" {
 }
 
 variable "scaling_policy" {
-  type = list(object({
-    metric_name = string
-    target      = number
-    statistic   = string
-    cooldown    = number
-  }))
+  type = object({
+    metric_name      = string
+    target           = number
+    scaledown_target = number
+    statistic        = string
+    cooldown         = number
+    period           = number
+  })
   description = "The auto-scaling policy."
-  default = [
-    {
-      metric_name = "CPUUtilization"
-      target      = 60
-      statistic   = "Average"
-      cooldown    = 120
-    }
-  ]
+  default = {
+    metric_name      = "CPUUtilization"
+    target           = 60
+    scaledown_target = 20
+    statistic        = "Average"
+    cooldown         = 120
+    period           = 3600
+  }
 }
