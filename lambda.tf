@@ -73,7 +73,7 @@ resource "aws_cloudwatch_event_rule" "scaledown" {
 
 resource "aws_cloudwatch_event_target" "scaledown" {
     rule = aws_cloudwatch_event_rule.scaledown.name
-    target_id = "Scaledown DocDB ${var.cluster_identifier}"
+    target_id = "Scaledown-DocDB-${var.cluster_identifier}"
     arn = aws_lambda_function.scaledown.arn
 }
 
