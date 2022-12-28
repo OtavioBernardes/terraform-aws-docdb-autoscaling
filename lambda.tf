@@ -66,20 +66,21 @@ resource "aws_lambda_function" "scaledown" {
 }
 
 resource "aws_cloudwatch_event_rule" "scaledown" {
-    name = "DocDB-${var.cluster_identifier}-Scaledown"
-    description = "Schedule for DocDB ${var.cluster_identifier} scaledown function"
-    schedule_expression = "rate(1 hour)"
+  name = "DocDB-${var.cluster_identifier}-Scaledown"
+  description = "Schedule for DocDB ${var.cluster_identifier} scaledown function"
+  schedule_expression = "rate(1 hour)"
 }
 
 resource "aws_cloudwatch_event_target" "scaledown" {
-    rule = aws_cloudwatch_event_rule.scaledown.name
-    target_id = "Scaledown-DocDB-${var.cluster_identifier}"
-    arn = aws_lambda_function.scaledown.arn
+  rule = aws_cloudwatch_event_rule.scaledown.name
+  target_id = "Scaledown-DocDB-${var.cluster_identifier}"
+  arn = aws_lambda_function.scaledown.arn
 }
 
 resource "aws_lambda_permission" "scaledown" {
-    statement_id = "AllowExecutionFromCloudWatch"
-    action = "lambda:InvokeFunction"
-    function_name = aws_lambda_function.scaledown.function_name
-    principal = "events.amazonaws.com"
+  statement_id = "AllowExecutionFromCloudWatch"
+  action = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.scaledown.function_name
+  principal = "events.amazonaws.com"
+  source_arn = aws_cloudwatch_event_rule.scaledown.arn
 }
