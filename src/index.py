@@ -19,12 +19,18 @@ statistic          = os.environ.get("statistic")
 period             = int(os.environ.get("period"))
 
 def scaleup(event, context):
+  logging.info("Scaleup initiated...")
+  
   if min_capacity > max_capacity:
     logging.critical("The 'min_capacity' cannot be greater than 'max_capacity'.")
     return None
 
   docdb = autoscaling.DocumentDB(cluster_identifier, min_capacity, max_capacity)
   replicas_count = docdb.get_replicas_count()
+
+  if min_capacity == replicas_count:
+    logging.warning("The 'replicas_count' is identical to 'min_capacity', no action taken.")
+    return None
 
   # Add more replica instances to meet the minimum capacity
   if min_capacity > replicas_count:
@@ -46,12 +52,10 @@ def scaleup(event, context):
 
   if "scaleup" in alarm_name:
     logging.warning("Adding replica...")
-    #docdb.add_replica()
-    logging.critical("Would add Replica...")
+    docdb.add_replica()
   elif "scaledown" in alarm_name:
     logging.warning("Removing replica...")
-    #docdb.remove_replica()
-    logging.critical("Would remove Replica...")
+    docdb.remove_replica()
   else:
     # This condition should never be true and indicates that something unintended
     # happened.
@@ -59,10 +63,12 @@ def scaleup(event, context):
     return None
 
 def scaledown(event, context):
+  logging.info("Scaledown initiated...")
+  
   docdb = autoscaling.DocumentDB(cluster_identifier, min_capacity, max_capacity)
   replicas_count = docdb.get_replicas_count()
 
-  logging.info("There are " + str(replicas_count) + " " + cluster_identifier + " replicas."
+  logging.info("There are " + str(replicas_count) + " " + cluster_identifier + " replicas.")
 
   if min_capacity == replicas_count:
     logging.warning("The 'replicas_count' is identical to 'min_capacity', no action taken.")
@@ -102,7 +108,7 @@ def scaledown(event, context):
 
     if average < scaledown_target:
       logging.warning("The " + statistic + " " + metric_name + " has been below " + str(scaledown_target) + " for " + str(period) + "seconds, scaling down...")
-      #docdb.remove_replica()
+      docdb.remove_replica()
       logging.critical("Would remove Replica...")
     else:
       logging.warning("The " + statistic + " " + metric_name + " has been above " + str(scaledown_target) + " for " + str(period) + "seconds, no action taken...")
