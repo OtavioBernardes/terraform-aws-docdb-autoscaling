@@ -66,7 +66,7 @@ resource "aws_lambda_function" "scaledown" {
 }
 
 resource "aws_cloudwatch_event_rule" "scaledown" {
-    name = "schedule"
+    name = "DocDB-${var.cluster_identifier}-Scaledown"
     description = "Schedule for DocDB ${var.cluster_identifier} scaledown function"
     schedule_expression = "rate(1 hour)"
 }
