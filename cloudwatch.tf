@@ -11,9 +11,7 @@ locals {
 
 # Scale-up alarm
 resource "aws_cloudwatch_metric_alarm" "scaleup" {
-  count = length(var.scaling_policy)
-
-  alarm_name          = "${var.name}-${local.scaleup_name}-${count.index}"
+  alarm_name          = "${var.name}-${local.scaleup_name}"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
   namespace           = "AWS/DocDB"
@@ -33,9 +31,7 @@ resource "aws_cloudwatch_metric_alarm" "scaleup" {
 
 # Scale-down alarm
 # resource "aws_cloudwatch_metric_alarm" "scaledown" {
-#   count = length(var.scaling_policy)
-
-#   alarm_name          = "${var.name}-${local.scaledown_name}-${count.index}"
+#   alarm_name          = "${var.name}-${local.scaledown_name}"
 #   comparison_operator = "LessThanThreshold"
 #   evaluation_periods  = "1"
 #   namespace           = "AWS/DocDB"
