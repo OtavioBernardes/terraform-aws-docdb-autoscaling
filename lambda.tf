@@ -32,7 +32,7 @@ resource "aws_lambda_permission" "sns" {
   function_name = aws_lambda_function.scaleup.arn
   principal     = "sns.amazonaws.com"
   statement_id  = "AllowSubscriptionToSNS"
-  source_arn    = aws_sns_topic.main.arn
+  source_arn    = aws_sns_topic.scaleup.arn
 }
 
 # Scaledown Lambda function
