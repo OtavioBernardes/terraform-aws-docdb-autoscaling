@@ -28,7 +28,7 @@ resource "aws_iam_policy" "lambda" {
           "logs:CreateLogStream",
           "logs:CreateLogGroup"
         ],
-	Resources : [
+	Resource : [
 	  "${aws_cloudwatch_log_group.scaleup.arn}:*",
 	  "${aws_cloudwatch_log_group.scaledown.arn}:*",
 	]
@@ -38,7 +38,7 @@ resource "aws_iam_policy" "lambda" {
         Action : [
           "logs:PutLogEvents"
         ],
-	Resources : [
+	Resource : [
 	  "${aws_cloudwatch_log_group.scaleup.arn}:*:*",
 	  "${aws_cloudwatch_log_group.scaledown.arn}:*:*",
 	]
