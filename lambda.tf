@@ -18,6 +18,7 @@ resource "aws_lambda_function" "scaleup" {
       target             = tostring(var.scaling_policy.target)
       scaledown_target   = tostring(var.scaling_policy.scaledown_target)
       statistic          = var.scaling_policy.statistic
+
       cooldown           = tostring(var.scaling_policy.cooldown)
     }
   }

@@ -18,6 +18,7 @@ target             = int(os.environ.get("target"))
 scaledown_target   = int(os.environ.get("scaledown_target"))
 statistic          = os.environ.get("statistic")
 period             = int(os.environ.get("period"))
+cooldown           = int(os.environ.get("cooldown"))
 
 def scaleup(event, context):
   logging.info("Scaleup initiated...")
@@ -85,7 +86,7 @@ def scaledown(event, context):
     alarm_response = client.describe_alarms(AlarmNames=[scaleup_alarm_name])
 
     # Only scale down, if the scaleup alarm is not active
-    if "OK" in response['MetricAlarms'][0]['StateValue']:
+    if "OK" in alarm_response['MetricAlarms'][0]['StateValue']:
       metric_response = client.get_metric_statistics(
         Namespace="AWS/DocDB",
         MetricName=metric_name,
@@ -117,8 +118,12 @@ def scaledown(event, context):
       else:
         logging.warning("The " + statistic + " " + metric_name + " has been above " + str(scaledown_target) + " for " + str(period) + "seconds, no action taken...")
         return None
+    elif alarm_response is None:
+      logging.critical("There has been an error determining the state of " + scaleup_alarm_name + " no action taken...")
+      return None
     else:
-      logging.warning("The alarm " + alarm_name + " is active, no action taken...")
+      logging.warning("The alarm " + scaleup_alarm_name + " is active, no action taken...")
+      return None
   else:
     logging.critical("Something went wrong determining the replicas_count, aborting...")
     return None
