@@ -20,7 +20,7 @@ resource "aws_cloudwatch_metric_alarm" "scaleup" {
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
   namespace           = "AWS/DocDB"
-  metric_name         = "${var.scaling_policy.metric_name}-${local.scaleup_name}"
+  metric_name         = var.scaling_policy.metric_name
   statistic           = var.scaling_policy.statistic
   period              = tostring(var.scaling_policy.cooldown)
   threshold           = tostring(var.scaling_policy.target)
@@ -40,7 +40,7 @@ resource "aws_cloudwatch_metric_alarm" "scaleup" {
 #   comparison_operator = "LessThanThreshold"
 #   evaluation_periods  = "1"
 #   namespace           = "AWS/DocDB"
-#   metric_name         = "${var.scaling_policy.metric_name}-${local.scaledown_name}"
+#   metric_name         = var.scaling_policy.metric_name
 #   statistic           = var.scaling_policy.statistic
 #   period              = tostring(var.scaling_policy.cooldown)
 #   threshold           = tostring(var.scaling_policy.scaledown_target)
