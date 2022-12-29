@@ -28,14 +28,20 @@ resource "aws_iam_policy" "lambda" {
           "logs:CreateLogStream",
           "logs:CreateLogGroup"
         ],
-        Resource : "${aws_cloudwatch_log_group.main.arn}:*",
+	Resources : [
+	  "${aws_cloudwatch_log_group.scaleup.arn}:*",
+	  "${aws_cloudwatch_log_group.scaledown.arn}:*",
+	]
         Effect : "Allow"
       },
       {
         Action : [
           "logs:PutLogEvents"
         ],
-        Resource : "${aws_cloudwatch_log_group.main.arn}:*:*",
+	Resources : [
+	  "${aws_cloudwatch_log_group.scaleup.arn}:*:*",
+	  "${aws_cloudwatch_log_group.scaledown.arn}:*:*",
+	]
         Effect : "Allow"
       },
       {
