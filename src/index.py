@@ -119,10 +119,10 @@ def scaledown(event, context):
       else:
         logging.warning("The " + statistic + " " + metric_name + " has been above " + str(scaledown_target) + " for " + str(period) + "seconds, no action taken...")
         return None
-    elif "ALARM" in alarm_response:
+    elif "ALARM" in alarm_state:
       logging.warning("The alarm " + scaleup_alarm_name + " is active, no action taken...")
       return None
-    elif "INSUFFICIENT_DATA" in alarm_response:
+    elif "INSUFFICIENT_DATA" in alarm_state:
       logging.warning("The alarm " + scaleup_alarm_name + " has insufficient data, no action taken...")
       return None
     else:
