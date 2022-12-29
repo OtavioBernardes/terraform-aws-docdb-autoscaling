@@ -84,9 +84,10 @@ def scaledown(event, context):
     client = boto3.client('cloudwatch')
 
     alarm_response = client.describe_alarms(AlarmNames=[scaleup_alarm_name])
+    alarm_state    = response['MetricAlarms'][0]['StateValue']
 
     # Only scale down, if the scaleup alarm is not active
-    if "OK" in alarm_response['MetricAlarms'][0]['StateValue']:
+    if "OK" in alarm_state:
       metric_response = client.get_metric_statistics(
         Namespace="AWS/DocDB",
         MetricName=metric_name,
@@ -118,11 +119,14 @@ def scaledown(event, context):
       else:
         logging.warning("The " + statistic + " " + metric_name + " has been above " + str(scaledown_target) + " for " + str(period) + "seconds, no action taken...")
         return None
-    elif alarm_response is None:
-      logging.critical("There has been an error determining the state of " + scaleup_alarm_name + " no action taken...")
+    elif "ALARM" in alarm_response:
+      logging.warning("The alarm " + scaleup_alarm_name + " is active, no action taken...")
+      return None
+    elif "INSUFFICIENT_DATA" in alarm_response:
+      logging.warning("The alarm " + scaleup_alarm_name + " has insufficient data, no action taken...")
       return None
     else:
-      logging.warning("The alarm " + scaleup_alarm_name + " is active, no action taken...")
+      logging.critical("There has been an error determining the state of " + scaleup_alarm_name + " no action taken...")
       return None
   else:
     logging.critical("Something went wrong determining the replicas_count, aborting...")
