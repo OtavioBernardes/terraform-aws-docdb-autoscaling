@@ -39,7 +39,7 @@ def scaleup(event, context):
 
     while missing_replicas > 0:
       logging.warning("Adding replica...")
-      #docdb.add_replica(ignore_status=True)
+      docdb.add_replica(ignore_status=True)
       logging.critical("Would add Replica...")
       missing_replicas -= 1
  

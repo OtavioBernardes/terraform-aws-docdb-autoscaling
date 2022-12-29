@@ -1,8 +1,10 @@
 import boto3
 import uuid
+import time
 import logging
 
-client = boto3.client('docdb')
+client    = boto3.client('docdb')
+ts_client = boto3.client('timestream-write')
 
 class DocumentDB:
   """
@@ -125,13 +127,15 @@ class DocumentDB:
       logging.error("Is modifying.")
       return None
 
-    return client.create_db_instance(
+    response = client.create_db_instance(
       DBClusterIdentifier=self.db_cluster_id,
       DBInstanceIdentifier="%s-%s" % (self.db_cluster_id, uuid.uuid4().hex[0:8]),
       DBInstanceClass=self.get_primary_instance_class(),
       Engine="docdb",
     )
-
+    docdb.timestream_write_replica_count()
+    return response
+  
   def remove_replica(self, ignore_status=False):
     """
     Remove one read replica.
@@ -156,6 +160,47 @@ class DocumentDB:
     for cluster_member in db_cluster_members:
       # Remove the first replica instance found
       if not cluster_member.get('IsClusterWriter'):
-        return client.delete_db_instance(
+        response = client.delete_db_instance(
           DBInstanceIdentifier=cluster_member.get('DBInstanceIdentifier')
         )
+        docdb.timestream_write_replica_count()
+        return response
+
+  def timestream_write_replica_count(self):
+    logging.info("Writing records")
+    current_time = self._current_milli_time()
+    
+    dimensions = [
+      {'Name': 'cluster_identifier', 'Value': self.db_cluster_id}
+    ]
+
+    replica_count = {
+      'Dimensions': dimensions,
+      'MeasureName': 'replica_count',
+      'MeasureValue': str(self.get_replicas_count()),
+      'MeasureValueType': 'BIGINT',
+      'Time': current_time
+    }
+
+    records = [replica_count]
+
+    try:
+      result = ts_client.write_records(DatabaseName="bria", TableName="docdb-" + self.db_cluster_id,
+                                       Records=records, CommonAttributes={})
+      logging.info("WriteRecords Status: [%s]" % result['ResponseMetadata']['HTTPStatusCode'])
+    except ts_client.exceptions.RejectedRecordsException as err:
+      self._print_rejected_records_exceptions(err)
+    except Exception as err:
+      logging.critical("Error:", err)
+
+  @staticmethod
+  def _print_rejected_records_exceptions(err):
+    print("RejectedRecords: ", err)
+    for rr in err.response["RejectedRecords"]:
+      logging.critical("Rejected Index " + str(rr["RecordIndex"]) + ": " + rr["Reason"])
+      if "ExistingVersion" in rr:
+        logging.critical("Rejected record existing version: ", rr["ExistingVersion"])
+
+  @staticmethod
+  def _current_milli_time():
+    return str(int(round(time.time() * 1000)))
