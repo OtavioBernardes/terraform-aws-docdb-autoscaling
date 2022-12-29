@@ -10,6 +10,7 @@ from datetime import datetime,timedelta
 min_capacity       = int(os.environ.get("min_capacity"))
 max_capacity       = int(os.environ.get("max_capacity"))
 cluster_identifier = os.environ.get("cluster_identifier")
+scaleup_alarm_name = os.environ.get("scaleup_alarm_name")
 
 # Scaling policies
 metric_name        = os.environ.get("metric_name")
@@ -81,37 +82,43 @@ def scaledown(event, context):
 
     client = boto3.client('cloudwatch')
 
-    response = client.get_metric_statistics(
-      Namespace="AWS/DocDB",
-      MetricName=metric_name,
-      Dimensions=[
-        {
-          "Name": "DBClusterIdentifier",
-          "Value": cluster_identifier
-        },
-      ],
-      StartTime=datetime.utcnow() - timedelta(seconds = period),
-      EndTime=datetime.utcnow(),
-      Period=period,
-      Statistics=[
-        statistic,
-      ]
-    )
+    alarm_response = client.describe_alarms(AlarmNames=[scaleup_alarm_name])
 
-    # If there are multiple datapoints, calculate average (usually there is only one, but this way it's more robust)
-    average = 0.0
+    # Only scale down, if the scaleup alarm is not active
+    if "OK" in response['MetricAlarms'][0]['StateValue']:
+      metric_response = client.get_metric_statistics(
+        Namespace="AWS/DocDB",
+        MetricName=metric_name,
+        Dimensions=[
+          {
+            "Name": "DBClusterIdentifier",
+            "Value": cluster_identifier
+          },
+        ],
+        StartTime=datetime.utcnow() - timedelta(seconds = period),
+        EndTime=datetime.utcnow(),
+        Period=period,
+        Statistics=[
+          statistic,
+        ]
+      )
 
-    for datapoint in response['Datapoints']:
-      average += float(datapoint[statistic])
+      # If there are multiple datapoints, calculate average (usually there is only one, but this way it's more robust)
+      average = 0.0
+
+      for datapoint in metric_response['Datapoints']:
+        average += float(datapoint[statistic])
       
-    average /= len(response['Datapoints'])
+      average /= len(metric_response['Datapoints'])
 
-    if average < scaledown_target:
-      logging.warning("The " + statistic + " " + metric_name + " has been below " + str(scaledown_target) + " for " + str(period) + "seconds, scaling down...")
-      docdb.remove_replica()
+      if average < scaledown_target:
+        logging.warning("The " + statistic + " " + metric_name + " has been below " + str(scaledown_target) + " for " + str(period) + "seconds, scaling down...")
+        docdb.remove_replica()
+      else:
+        logging.warning("The " + statistic + " " + metric_name + " has been above " + str(scaledown_target) + " for " + str(period) + "seconds, no action taken...")
+        return None
     else:
-      logging.warning("The " + statistic + " " + metric_name + " has been above " + str(scaledown_target) + " for " + str(period) + "seconds, no action taken...")
-      return None
+      logging.warning("The alarm " + alarm_name + " is active, no action taken...")
   else:
     logging.critical("Something went wrong determining the replicas_count, aborting...")
     return None
