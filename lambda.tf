@@ -19,6 +19,7 @@ resource "aws_lambda_function" "scaleup" {
       scaledown_target   = tostring(var.scaling_policy.scaledown_target)
       statistic          = var.scaling_policy.statistic
 
+      period             = tostring(var.scaling_policy.period)
       cooldown           = tostring(var.scaling_policy.cooldown)
     }
   }
@@ -58,6 +59,7 @@ resource "aws_lambda_function" "scaledown" {
       statistic          = var.scaling_policy.statistic
 
       period             = tostring(var.scaling_policy.period)
+      cooldown           = tostring(var.scaling_policy.cooldown)
     }
   }
 
