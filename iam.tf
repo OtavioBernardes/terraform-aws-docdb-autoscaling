@@ -36,9 +36,7 @@ resource "aws_iam_policy" "lambda" {
 	Action : [
 	  "timestream:DescribeEndpoints"
 	],
-	Resource : [
-	  "*"
-	]
+	Resource : "*"
       },
       {
 	Action : [
