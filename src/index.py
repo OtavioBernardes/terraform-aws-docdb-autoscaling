@@ -76,7 +76,7 @@ def scaledown(event, context):
     client = boto3.client('cloudwatch')
 
     alarm_response = client.describe_alarms(AlarmNames=[scaleup_alarm_name])
-    alarm_state    = response['MetricAlarms'][0]['StateValue']
+    alarm_state    = alarm_response['MetricAlarms'][0]['StateValue']
 
     # Only scale down, if the scaleup alarm is not active
     if "OK" in alarm_state:
