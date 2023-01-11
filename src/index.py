@@ -17,6 +17,7 @@ metric_name        = os.environ.get("metric_name")
 target             = int(os.environ.get("target"))
 scaledown_target   = int(os.environ.get("scaledown_target"))
 statistic          = os.environ.get("statistic")
+
 period             = int(os.environ.get("period"))
 cooldown           = int(os.environ.get("cooldown"))
 
@@ -30,8 +31,8 @@ def scaleup(event, context):
   docdb = autoscaling.DocumentDB(cluster_identifier, min_capacity, max_capacity)
   replicas_count = docdb.get_replicas_count()
 
-  if min_capacity == replicas_count:
-    logging.warning("The 'replicas_count' is identical to 'min_capacity', no action taken.")
+  if replicas_count >= max_capacity:
+    logging.warning("The 'replicas_count' is greater or equal to 'max_capacity', no action taken.")
     return None
 
   # Add more replica instances to meet the minimum capacity
@@ -47,21 +48,12 @@ def scaleup(event, context):
  
     # Ignore the alarm state
     return None
-
-  # The alarm_name determines whether to scale up or down.
-  sns_message = json.loads(event.get('Records')[0].get('Sns').get('Message'))
-  alarm_name = sns_message.get('AlarmName')
-
-  if "scaleup" in alarm_name:
+  
+  if replicas_count < max_capacity:
     logging.warning("Adding replica...")
     docdb.add_replica()
-  elif "scaledown" in alarm_name:
-    logging.warning("Removing replica...")
-    docdb.remove_replica()
   else:
-    # This condition should never be true and indicates that something unintended
-    # happened.
-    logging.critical("The alarm name contained neither 'scaleup' nor 'scaledown'")
+    logging.critical("Something went wrong during scaleup, abort...")
     return None
 
 def scaledown(event, context):
