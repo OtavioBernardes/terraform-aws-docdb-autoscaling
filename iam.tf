@@ -24,19 +24,44 @@ resource "aws_iam_policy" "lambda" {
     Version : "2012-10-17",
     Statement : [
       {
-        Action : [
-          "logs:CreateLogStream",
-          "logs:CreateLogGroup"
+	Action : [
+          "cloudwatch:DescribeAlarms"
         ],
 	Resource : [
-	  "${aws_cloudwatch_log_group.scaleup.arn}:*",
-	  "${aws_cloudwatch_log_group.scaledown.arn}:*",
+	  "${aws_cloudwatch_metric_alarm.scaleup.arn}"
 	]
         Effect : "Allow"
       },
       {
+	Action : [
+	  "timestream:DescribeEndpoints"
+	],
+	Resource : [
+	  "*"
+	]
+      },
+      {
+	Action : [
+	  "timestream:WriteRecords"
+	],
+	Resource : [
+	  "arn:aws:timestream:us-east-1:300465780738:database/bria/table/docdb-vdr"
+	]
+      },
+      {
+	Action : [
+	  "logs:CreateLogStream",
+	  "logs:CreateLogGroup"
+	],
+	Resource : [
+	  "${aws_cloudwatch_log_group.scaleup.arn}:*",
+	  "${aws_cloudwatch_log_group.scaledown.arn}:*",
+	]
+	Effect : "Allow"
+      },
+      {
         Action : [
-          "logs:PutLogEvents"
+	  "logs:PutLogEvents"
         ],
 	Resource : [
 	  "${aws_cloudwatch_log_group.scaleup.arn}:*:*",
