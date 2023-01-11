@@ -133,7 +133,7 @@ class DocumentDB:
       DBInstanceClass=self.get_primary_instance_class(),
       Engine="docdb",
     )
-    docdb.timestream_write_replica_count()
+    self.timestream_write_replica_count()
     return response
   
   def remove_replica(self, ignore_status=False):
@@ -163,7 +163,7 @@ class DocumentDB:
         response = client.delete_db_instance(
           DBInstanceIdentifier=cluster_member.get('DBInstanceIdentifier')
         )
-        docdb.timestream_write_replica_count()
+        self.timestream_write_replica_count()
         return response
 
   def timestream_write_replica_count(self):
