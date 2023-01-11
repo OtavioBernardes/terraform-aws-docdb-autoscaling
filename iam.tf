@@ -43,6 +43,15 @@ resource "aws_iam_policy" "lambda" {
       },
       {
 	Action : [
+	  "cloudwatch:GetMetricStatistics"
+	],
+	Resource : [
+	  "*"
+	],
+	Effect: "Allow"
+      },
+      {
+	Action : [
 	  "timestream:WriteRecords"
 	],
 	Resource : [
