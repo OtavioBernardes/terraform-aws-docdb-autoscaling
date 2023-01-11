@@ -46,6 +46,11 @@ variable "max_capacity" {
   }
 }
 
+variable "scaledown_schedule" {
+  type = string
+  default = "rate(1 hour)"
+}
+
 variable "scaling_policy" {
   type = object({
     metric_name      = string
