@@ -53,7 +53,7 @@ resource "aws_iam_policy" "lambda" {
 	],
 	Resource : [
 	  "${aws_cloudwatch_log_group.scaleup.arn}:*",
-	  "${aws_cloudwatch_log_group.scaledown.arn}:*",
+	  "${aws_cloudwatch_log_group.scaledown.arn}:*"
 	]
 	Effect : "Allow"
       },
@@ -63,7 +63,7 @@ resource "aws_iam_policy" "lambda" {
         ],
 	Resource : [
 	  "${aws_cloudwatch_log_group.scaleup.arn}:*:*",
-	  "${aws_cloudwatch_log_group.scaledown.arn}:*:*",
+	  "${aws_cloudwatch_log_group.scaledown.arn}:*:*"
 	]
         Effect : "Allow"
       },
