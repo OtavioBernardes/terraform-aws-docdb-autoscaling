@@ -52,6 +52,7 @@ resource "aws_lambda_function" "scaledown" {
       min_capacity       = tostring(var.min_capacity)
       max_capacity       = tostring(var.max_capacity)
       cluster_identifier = var.cluster_identifier
+      scaleup_alarm_name = aws_cloudwatch_metric_alarm.scaleup.alarm_name
 
       metric_name        = var.scaling_policy.metric_name
       target             = tostring(var.scaling_policy.target)
