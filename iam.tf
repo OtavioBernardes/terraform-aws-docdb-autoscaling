@@ -29,7 +29,7 @@ resource "aws_iam_policy" "lambda" {
         ],
 	Resource : [
 	  "${aws_cloudwatch_metric_alarm.scaleup.arn}"
-	]
+	],
         Effect : "Allow"
       },
       {
@@ -44,7 +44,8 @@ resource "aws_iam_policy" "lambda" {
 	],
 	Resource : [
 	  "arn:aws:timestream:us-east-1:300465780738:database/bria/table/docdb-vdr"
-	]
+	],
+	Effect : "Allow"
       },
       {
 	Action : [
@@ -54,7 +55,7 @@ resource "aws_iam_policy" "lambda" {
 	Resource : [
 	  "${aws_cloudwatch_log_group.scaleup.arn}:*",
 	  "${aws_cloudwatch_log_group.scaledown.arn}:*"
-	]
+	],
 	Effect : "Allow"
       },
       {
@@ -64,7 +65,7 @@ resource "aws_iam_policy" "lambda" {
 	Resource : [
 	  "${aws_cloudwatch_log_group.scaleup.arn}:*:*",
 	  "${aws_cloudwatch_log_group.scaledown.arn}:*:*"
-	]
+	],
         Effect : "Allow"
       },
       {
