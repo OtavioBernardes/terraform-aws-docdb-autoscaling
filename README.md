@@ -94,6 +94,8 @@ Default value:
     target      = 60
     statistic   = "Average"
     cooldown    = 120
+    scaledown_target = 55
+    period           = 600
   }
 ]
 ```
