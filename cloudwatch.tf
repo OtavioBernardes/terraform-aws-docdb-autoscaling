@@ -46,7 +46,7 @@ resource "aws_cloudwatch_metric_alarm" "scaleup" {
    threshold           = tostring(var.scaling_policy.scaledown_target)
    # Actions
    actions_enabled = "true"
-   alarm_actions   = [aws_sns_topic.main.arn]
+   alarm_actions   = [aws_sns_topic.scaleup.arn]
    dimensions = {
      DBClusterIdentifier = var.cluster_identifier
    }
