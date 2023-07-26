@@ -1,9 +1,9 @@
 resource "aws_sns_topic" "scaleup" {
-  name = var.name + "-scaleup"
+  name = "${var.name}-scaleup"
 }
 
 resource "aws_sns_topic" "scaledown" {
-  name = var.name + "-scaledown"
+  name = "${var.name}-scaledown"
 }
 
 resource "aws_sns_topic_subscription" "scaleup" {
