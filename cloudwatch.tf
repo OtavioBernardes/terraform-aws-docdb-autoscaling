@@ -33,21 +33,3 @@ resource "aws_cloudwatch_metric_alarm" "scaleup" {
     DBClusterIdentifier = var.cluster_identifier
   }
 }
-
-# Scale-down alarm
- resource "aws_cloudwatch_metric_alarm" "scaledown" {
-   alarm_name          = "${var.name}-${local.scaledown_name}"
-   comparison_operator = "LessThanThreshold"
-   evaluation_periods  = "1"
-   namespace           = "AWS/DocDB"
-   metric_name         = var.scaling_policy.metric_name
-   statistic           = var.scaling_policy.statistic
-   period              = tostring(var.scaling_policy.cooldown)
-   threshold           = tostring(var.scaling_policy.scaledown_target)
-   # Actions
-   actions_enabled = "true"
-   alarm_actions   = [aws_sns_topic.scaleup.arn]
-   dimensions = {
-     DBClusterIdentifier = var.cluster_identifier
-   }
- }
