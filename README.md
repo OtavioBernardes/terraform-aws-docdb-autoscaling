@@ -28,24 +28,22 @@ Resources created by Terraform:
 You can deploy the function with Terraform using the following syntax:
 
 ```terraform
-module "docdb-autoscaling-prod" {
-  source             = "github.com/theuves/docdb-autoscaling"
-  cluster_identifier = "my-prod-cluster"
-  name               = "docdb-autoscaling-prod"
-  min_capacity       = 3
-  max_capacity       = 6
+module "docdb-autoscaling" {
+  source             = "github.com/OtavioBernardes/terraform-aws-docdb-autoscaling"
+  cluster_identifier = aws_docdb_cluster.docdb.id
+  name               = "docdb-mydbname-autoscaling"
+  min_capacity       = 1
+  max_capacity       = 3
+  scaledown_schedule = "rate(30 minutes)"
 
-  scaling_policy = [
-    {
-      metric_name = "CPUUtilization"
-      target      = 80
-      statistic   = "Average"
-      scaledown_target = 60
-      scaledown_schedule = "rate(30 minutes)"
-      cooldown    = 300
-      period      = 600
-    }
-  ]
+  scaling_policy = {
+    metric_name      = "CPUUtilization"
+    target           = 60
+    statistic        = "Average"
+    cooldown         = 300
+    scaledown_target = 50
+    period           = 3600
+  }
 }
 ```
 
@@ -80,27 +78,27 @@ terraform destroy
 Type:
 
 ```terraform
-list(object({
-  metric_name = string
-  target      = number
-  statistic   = string
-  cooldown    = number
-}))
+type = object({
+  metric_name      = string
+  target           = number
+  scaledown_target = number
+  statistic        = string
+  cooldown         = number
+  period           = number
+})
 ```
 
 Default value:
 
 ```terraform
-[
-  {
-    metric_name = "CPUUtilization"
-    target      = 60
-    statistic   = "Average"
-    cooldown    = 120
-    scaledown_target = 55
-    period           = 3600
-  }
-]
+scaling_policy = {
+  metric_name        = "CPUUtilization"
+  target             = 60
+  statistic          = "Average"
+  cooldown           = 300
+  scaledown_target   = 50
+  period             = 3600
+}
 ```
 
 Options:
