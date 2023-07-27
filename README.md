@@ -71,6 +71,7 @@ terraform destroy
 | `name` | Resources name. | `string` | `"docdb-autoscaling"` |
 | `min_capacity` | The minimum capacity. | `number` | `0` |
 | `max_capacity` | The maximum capacity. | `number` | `15` |
+| `scaledown_schedule` | The verification period for scaledown | `string` | `"rate(1 hour)"` |
 | `scaling_policy` | The auto-scaling policy. | [see here](#scaling_policy) | [see here](#scaling_policy) |
 
 ### `scaling_policy`
