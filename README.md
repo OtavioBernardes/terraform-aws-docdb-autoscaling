@@ -41,6 +41,7 @@ module "docdb-autoscaling-prod" {
       target      = 80
       statistic   = "Average"
       scaledown_target = 60
+      scaledown_schedule = "rate(30 minutes)"
       cooldown    = 300
       period      = 600
     }
