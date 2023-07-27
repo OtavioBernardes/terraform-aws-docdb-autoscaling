@@ -40,7 +40,9 @@ module "docdb-autoscaling-prod" {
       metric_name = "CPUUtilization"
       target      = 80
       statistic   = "Average"
+      scaledown_target = 60
       cooldown    = 300
+      period      = 600
     }
   ]
 }
@@ -95,7 +97,7 @@ Default value:
     statistic   = "Average"
     cooldown    = 120
     scaledown_target = 55
-    period           = 600
+    period           = 3600
   }
 ]
 ```
